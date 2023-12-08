@@ -14,8 +14,8 @@ include NanoSleep.e
 include Common.e
 include Defaults.e
 include Eun.e
-include ConvertExp.e
 include ToString.e
+include AdjustRound.e
 
 ifdef SMALL_CODE then
 -- Use old value() function to avoid Intel bug:
@@ -126,7 +126,8 @@ global function ToEun(object s, atom radix = defaultRadix, integer targetLength 
         end if
         fromRadix = 10
     end if
-    s = ConvertExp(s[1], s[2], targetLength, fromRadix, radix, config, getAllLevel)
+    -- s = ConvertExp(s[1], s[2], targetLength, fromRadix, radix, config, getAllLevel)
+    s = AdjustRound(s[1], s[2], s[3], s[4], NO_SUBTRACT_ADJUST, config, getAllLevel)
     return s
 end function
 

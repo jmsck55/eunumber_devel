@@ -20,7 +20,7 @@ global function MultiplyExp(sequence n1, integer exp1, sequence n2, integer exp2
     if isMixed = AUTO_ADJUST then
         isMixed = CARRY_ADJUST -- it will use "carry()"
     end if
-    ret = AdjustRound(numArray, exp1 + exp2, targetLength, radix, isMixed, config, getAllLevel)
+    ret = AdjustRound(numArray, exp1 + exp2, targetLength, radix, isMixed, config, NORMAL) -- should always be NORMAL.
     return ret
 end function
 

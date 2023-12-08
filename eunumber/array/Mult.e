@@ -19,11 +19,11 @@ global function GetTinyFastMult1()
     return tinyFastMult1
 end function
 
-global function Mult1(sequence n1, sequence n2, integer len = length(n1) + length(n2) - 1)
+global function Mult1(sequence n1, sequence n2)
     integer c
     sequence numArray
 -- This method may be faster:
-    numArray = repeat(0, len)
+    numArray = repeat(0, length(n1) + length(n2) - 1)
     for a = 1 to length(n1) do
         c = a
         for b = 1 to length(n2) do
@@ -86,7 +86,7 @@ global function Multiply(sequence n1, sequence n2, sequence len_radix = {}, inte
     end if
     len = length(n1) + length(n2) - 1
     if len <= tinyFastMult1 then
-        return Mult1(n1, n2, len)
+        return Mult1(n1, n2)
     end if
     if length(len_radix) then
         if len_radix[1] != lastLen or len_radix[2] != lastRadix then

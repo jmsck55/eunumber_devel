@@ -121,10 +121,13 @@ global function GetLogDomain(sequence n1, integer exp1, integer targetLength, at
     -- -- Step 1:
     m = GetE(targetLength, radix, config, TO_EXP)
     t = FindPowerOfExp(n1, exp1, targetLength, radix, m[1], m[2], FIND_POWER_LESS_THAN, config) -- Less than.
-    -- n = m[1] -- need to return this value.
+    if t[1] = 0 then
+        t = {1, m}
+    end if
+    -- n = t[1] -- need to return this value.
     m = t[2] -- a power of GetE()
     -- Step 2:
-    if t[1] < 0 then
+    if t[1] < 0 then -- what if t[1] is zero (0)?
         m = MultiplyExp(n1, exp1, m[1], m[2], targetLength, radix, CARRY_ADJUST, config, getAllLevel) -- need to return m
     else
         m = DivideExp(n1, exp1, m[1], m[2], targetLength, radix, config, getAllLevel) -- need to return m
@@ -234,6 +237,9 @@ global function NaturalLogarithm(sequence n1, integer exp1, integer targetLength
         p = MultiplyExp(p[1], p[2], xNegativePlusOne[1], xNegativePlusOne[2], targetLength, radix, CARRY_ADJUST, config, TO_EXP)
         s = DivideExp(p[1], p[2], k[1], k[2], targetLength, radix, config, TO_EXP)
         sum = AddExp(sum[1], sum[2], s[1], s[2], targetLength, radix, AUTO_ADJUST, config, TO_EXP)
+        if logIterCount > 100 then
+            trace(1) -- natural logarithm does not seem to be working.
+        end if
         s = ReturnToUserCallBack(ID_Log, logHowComplete, targetLength, sum, lookat, radix, config)
         lookat = s[2]
         logHowComplete = s[3]
@@ -300,13 +306,13 @@ global function LogExpA(sequence n1, integer exp1, integer targetLength, atom ra
     protoTargetLength = targetLength + moreAccuracy + 1
     -- Calculate the guess
     -- Step 1 and Step 2:
-    --if CompareExp(n1, exp1, {2}, 0) >= 0 then
+    if CompareExp(n1, exp1, {2}, 0) >= 0 then
         --sequence t
         guess = GetLogDomain(n1, exp1, protoTargetLength, radix, config, TO_EXP)
         n = guess[1]
         n1 = guess[2][1]
         exp1 = guess[2][2]
-    --end if
+    end if
     -- Step 3:
     guess = NaturalLogarithm(n1, exp1, protoTargetLength, radix, config, TO_EXP)
     -- Step 4:

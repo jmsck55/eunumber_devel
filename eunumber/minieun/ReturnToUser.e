@@ -5,9 +5,9 @@
 
 namespace returntouser
 
-ifdef WITHOUT_TRACE then
-without trace
-end ifdef
+--ifdef WITHOUT_TRACE then
+--without trace
+--end ifdef
 
 include AdjustRound.e
 include Defaults.e
@@ -41,13 +41,13 @@ end function
 global function DefaultRTU(integer eunFunc, sequence hc, integer targetLength,
      sequence ret, sequence lookat, atom radix, sequence config)
     integer level -- 0, 1, or 2
-    
+
 --global sequence howComplete = {level = 0, ret, new_howComplete}
 -- hc == {clength + 1, cminlength, compare() == -1 or 0 or 1}
 
     if not abort_calculating and length(hc) then
         if atom(hc[1]) then -- Eun number:
-            ret = AdjustRound(ret[1], ret[2], targetLength + 1, radix, NO_SUBTRACT_ADJUST, config)
+            ret = AdjustRound(ret[1], ret[2], targetLength, radix, NO_SUBTRACT_ADJUST, config)
             if length(hc) = 3 then
                 hc = hc & 0
             end if

@@ -3,9 +3,9 @@
 
 namespace multiplicativeInverse
 
-ifdef WITHOUT_TRACE then
-without trace
-end ifdef
+--ifdef WITHOUT_TRACE then
+--without trace
+--end ifdef
 
 include ../array/TrimZeros.e
 include AddExp.e

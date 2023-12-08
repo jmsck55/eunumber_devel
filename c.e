@@ -1,9 +1,11 @@
 
-with define WITHOUT_TRACE
+-- Figure out why this isn't working:
 
-ifdef WITHOUT_TRACE then
+--with define WITHOUT_TRACE
+
+--ifdef WITHOUT_TRACE then
 with trace
-end ifdef
+--end ifdef
 
 include get.e
 
@@ -20,18 +22,16 @@ include eunumber/minieun/Eun.e
 
 constant err = 0 --here
 
-constant len = 70
-defaultTargetLength = len
+constant len = 10
+SetDefaultTargetLength(len)
 
-constant s = {2} -- {1,2,3,4,5,6,7,8,9}
+constant s = {3} -- {1,2,3,4,5,6,7,8,9}
 -- constant s = rand(repeat(9, 50))
 constant t = NewEun(s, 0, len, 10)
 
 sequence a, b, c, d, config
 sequence ta,tb,tc,td
 integer fn
-
-trace(1)
 
 --here, testing functions with new getAllLevel (-2,-1,0, or more)
 a = t
@@ -60,6 +60,8 @@ puts(1, "EunPower(): ")
 c = EunMultiplicativeInverse(a, {}, getAllLevel)
 puts(1, "Half: ")
 ? c
+
+--trace(1)
 
 d = EunPower(b, c, getAllLevel)
 puts(1, "Answer: ")

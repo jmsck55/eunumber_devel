@@ -13,7 +13,6 @@ include ../array/ArrayFuncs.e
 include Eun.e
 include Common.e
 include MathConst.e
-include ConvertExp.e
 include UserMisc.e
 include ToEun.e
 
@@ -51,7 +50,8 @@ global function ToString(object s, FourOptions padWithZeros = 0, integer getAllL
         s[3] += s[5] -- gets actual targetLength.
     end if
     if s[4] != 10 then
-        s = EunConvert(s, 10, Ceil((log(s[4]) / logTen) * s[3]), getAllLevel)
+        abort(1/0)
+        -- s = EunConvert(s, 10, Ceil((log(s[4]) / logTen) * s[3]), getAllLevel)
     else
         s = AdjustRound(s[1], s[2], s[3], s[4], NO_SUBTRACT_ADJUST, GetConfiguration1(s), getAllLevel)
     end if
