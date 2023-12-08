@@ -129,7 +129,7 @@ end function
 -- global integer arctanIter = 1000000000 -- 500
 -- global integer lastIterCountArctan = 0
 --
--- global function ArctanExp(sequence n1, integer exp1, TargetLength targetLength, integer radix)
+-- global function ArctanExp(sequence n1, integer exp1, integer targetLength, atom radix)
 -- -- works best with small numbers.
 -- -- arctan(x) = x - ((x^3)/3) + ((x^5)/5) - ((x^7)/7) + ..., where abs(x) < 1
 -- -- sine(x) = x - ((x^3)/(3!)) + ((x^5)/(5!)) - ((x^7)/(7!)) + ((x^9)/(9!)) - ...

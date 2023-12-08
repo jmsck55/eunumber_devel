@@ -1,6 +1,5 @@
 -- Copyright James Cook
 -- multitasking support for EuNumber.
--- include eunumber/MultiTasking.e
 
 --with define USE_TASK_YIELD
 
@@ -21,6 +20,7 @@ end ifdef
 ifdef USE_TASK_YIELD then
 
     public include std/console.e
+    public include std/task.e
     include Common.e
     include ReturnToUser.e
 
@@ -31,12 +31,12 @@ ifdef USE_TASK_YIELD then
         integer count = 0
         while useTaskYield do
 ifdef DEBUG_TASK then
-                if count = 10 then
-                    count = 1
-                else
-                    count += 1
-                end if
-                printf(1, "check_break: %d\n", count)
+            if count = 10 then
+                count = 1
+            else
+                count += 1
+            end if
+            printf(1, "check_break: %d\n", count)
 end ifdef
             if get_key() = 'q' or check_break() then
                 abort_calculating = 1
@@ -64,7 +64,7 @@ end ifdef
     end procedure
 
 ifdef DEBUG_TASK then
-        schedule_check_break()
+    schedule_check_break()
 end ifdef
 
 end ifdef

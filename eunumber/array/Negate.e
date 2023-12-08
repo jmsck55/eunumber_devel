@@ -9,15 +9,15 @@ include ../minieun/NanoSleep.e
 
 global function Negate(sequence numArray)
 ifdef OLD_PROCESSOR_MODE then
-        return - numArray
+    return - (numArray)
 elsedef
-        for i = 1 to length(numArray) do
-            numArray[i] = - (numArray[i])
-    ifdef not NO_SLEEP_OPTION then
-            sleep(nanoSleep)
-    end ifdef
-        end for
-        return numArray
+    for i = 1 to length(numArray) do
+        numArray[i] = - (numArray[i])
+ifdef not NO_SLEEP_OPTION then
+        sleep(nanoSleep)
+end ifdef
+    end for
+    return numArray
 end ifdef
 end function
 

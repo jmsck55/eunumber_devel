@@ -461,7 +461,7 @@ procedure Operations()
             defaultRadix = prompt_number("enter new defaultRadix: ", {2, 1025})
             defaultTargetLength = prompt_number("enter new defaultTargetLength: ", {2, INT_MAX})
             -- adjustRound = prompt_number("enter new adjustRound: ", {0, defaultTargetLength})
-            printf(1, "Current Rounding method is %d\n", {ROUND})
+            printf(1, "Current Rounding method is %d\n", {roundingMethod})
             puts(1, " ROUND_TOWARDS_INFINITY = 1\n")
             puts(1, " ROUND_TOWARDS_ZERO = 2\n")
             puts(1, " ROUND_TRUNCATE = 3\n")
@@ -471,7 +471,7 @@ procedure Operations()
             puts(1, " ROUND_ODD = 7\n")
             ch = prompt_number("enter new Rounding method, or 0 for no change: ", {0, 7})
             if ch > 0 then
-                ROUND = ch
+                roundingMethod = ch
             end if
             printf(1, "calculationSpeed is: %d\n", {calculationSpeed})
             calculationSpeed = prompt_number("enter new calculationSpeed: ", {})

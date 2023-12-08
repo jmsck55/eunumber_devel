@@ -1,16 +1,17 @@
 -- Copyright James Cook
 -- wholefracparts.e functions of EuNumber.
--- include eunumber/WholeFracParts.e
+-- include eunumber/array/WholeFracParts.e
 
 namespace wholefrac
 
-include Common.e
-include Defaults.e
+include ../minieun/Common.e
+include ../minieun/Defaults.e
+include ../minieun/Eun.e
 
 global constant WF_WHOLE_PART = 1, WF_FRAC_PART = 2 -- these can be added together to get both whole and frac parts.
 global constant WF_FLOOR = 1, WF_CEIL = 2
 
-global function WholeFracParts(sequence n1, integer exp, WhichOnes whichOnes = 3, integer intModeFloat = integerModeFloat, integer isFloor = 0)
+global function WholeFracParts(sequence n1, integer exp, WhichOnes whichOnes = 3, sequence config = {}, integer isFloor = 0)
     -- Returns whole and/or fraction parts, or it returns floor or ceiling values.
     -- It doesn't round, use rounding functions for that.
     --
@@ -30,8 +31,8 @@ global function WholeFracParts(sequence n1, integer exp, WhichOnes whichOnes = 3
     else
         frac = {}
     end if
-    if ROUND_TO_NEAREST_OPTION then
-        size += intModeFloat
+    if GetIsIntegerMode1(config) then
+        size += GetIntegerModeFloat1(config)
     end if
     if size >= 0 then -- there is a whole number part.
         size += 1
@@ -59,8 +60,8 @@ global function WholeFracParts(sequence n1, integer exp, WhichOnes whichOnes = 3
             if whichOnes != WF_WHOLE_PART then
                 frac = n1[size + 1..$]
                 size = -1
-                if ROUND_TO_NEAREST_OPTION then
-                    size -= intModeFloat
+                if GetIsIntegerMode1(config) then
+                    size -= GetIntegerModeFloat1(config)
                 end if
             else
                 size = 0

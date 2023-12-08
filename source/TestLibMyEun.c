@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2022 James Cook
+// Copyright James Cook
 
 // "Stub" test program.
 

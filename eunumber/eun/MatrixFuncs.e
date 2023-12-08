@@ -6,8 +6,10 @@ namespace matrixfuncs
 
 include ../minieun/NanoSleep.e
 include ../minieun/Eun.e
+include ../minieun/Defaults.e
 include EunAdd.e
 include EunMultiply.e
+include EunAdjustRound.e
 
 -- Matrix functions:
 --
@@ -16,17 +18,27 @@ include EunMultiply.e
 -- global function GetMatrixRows(sequence a)
 -- global function GetMatrixCols(sequence a)
 -- global function MatrixMultiply(matrix a, matrix b) -- MatrixMultiplication
--- global function MatrixTransformation(matrix a)
+-- global function MatrixTransposition(matrix a)
+
+-- Matrix functions, below, use "defaultRadix".
 
 global type matrix(sequence s)
     integer lenRows = length(s)
     if lenRows then
         integer lenCols
         lenCols = length(s[1])
-        for i = 2 to lenRows do
-            if length(s[i]) != lenCols then
+        for row = 1 to lenRows do
+            if length(s[row]) != lenCols then
                 return 0
             end if
+            for col = 1 to lenCols do
+                if not Eun(s[row][col]) or s[row][col][4] != defaultRadix then
+                    return 0
+                end if
+ifdef not NO_SLEEP_OPTION then
+                sleep(nanoSleep)
+end ifdef
+            end for
 ifdef not NO_SLEEP_OPTION then
             sleep(nanoSleep)
 end ifdef
@@ -51,7 +63,7 @@ global function GetMatrixCols(sequence a)
     return 0
 end function
 
-global function MatrixMultiply(matrix a, matrix b)
+global function MatrixMultiply(matrix a, matrix b, integer getAllLevel = NORMAL)
 -- ret[i] =
 -- {
 --  a[i][k1] * b[k1][j1] + a[i][k2] * b[k2][j1],
@@ -62,7 +74,7 @@ global function MatrixMultiply(matrix a, matrix b)
 -- row0 = ret[i]
 -- row1 = a[i]
     integer rows, cols, len
-    sequence row0, row1, sum, ret
+    sequence row1, sum, ret
     -- Eun sum
     -- matrix ret
     len = GetMatrixRows(b)
@@ -74,22 +86,20 @@ global function MatrixMultiply(matrix a, matrix b)
     cols = GetMatrixCols(b)
     ret = NewMatrix(rows, cols)
     for i = 1 to rows do -- rows of "a"
-        row0 = ret[i]
         row1 = a[i]
         for j = 1 to cols do -- cols of "b"
             sum = NewEun()
             for k = 1 to len do -- k is cols of "a", rows of "b"
-                sum = EunAdd(sum, EunMultiply(row1[k], b[k][j]))
+                sum = EunAdd(sum, EunMultiply(row1[k], b[k][j], TO_EXP), TO_EXP)
 ifdef not NO_SLEEP_OPTION then
                 sleep(nanoSleep)
 end ifdef
             end for
-            row0[j] = sum
+            ret[i][j] = EunAdjustRound(sum, 0, NO_SUBTRACT_ADJUST, getAllLevel)
 ifdef not NO_SLEEP_OPTION then
             sleep(nanoSleep)
 end ifdef
         end for
-        ret[i] = row0
 ifdef not NO_SLEEP_OPTION then
         sleep(nanoSleep)
 end ifdef
@@ -97,7 +107,7 @@ end ifdef
     return ret
 end function
 
-global function MatrixTransformation(matrix a)
+global function MatrixTransposition(matrix a)
     integer rows, cols
     sequence ret, tmp
     rows = GetMatrixRows(a)

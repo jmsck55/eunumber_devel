@@ -30,7 +30,7 @@ global integer cosIterCount = 0
 
 global constant ID_Cosine = 8
 
-global function CosExp(sequence n1, integer exp1, TargetLength targetLength, AtomRadix radix, integer inside = 0)
+global function CosExp(sequence n1, integer exp1, integer targetLength, atom radix, integer inside = 0)
 -- cos(x) = 1 - ((x^2)/(2!)) + ((x^4)/(4!)) - ((x^6)/(6!)) + ((x^8)/(8!)) - ...
     -- Range: -PI/2 to PI/2, exclusive
     sequence a, b, tmp, xSquared, lookat, ret, s

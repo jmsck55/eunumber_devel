@@ -1,4 +1,4 @@
--- Copyright (c) James Cook
+-- Copyright James Cook
 
 --TODO:
 -- [ ] Test all functions of "EunTriangulation.e"

@@ -1,77 +1,71 @@
 -- Copyright James Cook
 -- "Compare" and "Equal" functions of EuNumber.
--- include eunumber/CompareFuncs.e
 
 ifdef WITHOUT_TRACE then
 without trace
 end ifdef
 
+include ../array/TrimZeros.e
 include Common.e
 include NanoSleep.e
-include TrimZeros.e
 include UserMisc.e
 include MultiTasking.e
 
 -- EunCompare:
 
-integer equalLength = 0
-integer compareMinLength = 0
-
-global function CompareExp(sequence n1, integer exp1, sequence n2, integer exp2, integer minlen = -1, PositiveInteger compareStart = 1)
+global function CompareExpLen(sequence n1, integer exp1, sequence n2, integer exp2, integer minlen = -1, PositiveInteger compareStart = 1)
 -- It doesn't look at targetLength or radix, so both "targetLength" and "radix" should be the same.
 -- Fixed.
-    integer f, neg1, neg2
-    -- Case of zero (0)
-    equalLength = 0 -- local variable
-    compareMinLength = 0 -- local variable
+    integer f, equalLen = 0, compareMinLen = 0
     n1 = TrimTrailingZeros(n1) -- keep these.
     n2 = TrimTrailingZeros(n2) -- keep these.
+    -- Case of zero (0)
     if length(n1) = 0 then
         if length(n2) = 0 then
-            return 0
+            return {0, 0, 0}
         end if
-        if n2[1] < 0 then -- if IsNegative(n2) then
-            return 1
+        if n2[1] < 0 then
+            return {1, 0, 0}
         else
-            return -1
+            return {-1, 0, 0}
         end if
-        -- return iff(n2[1] > 0, -1, 1)
+        -- return iff(n2[1] < 0, 1, -1)
     end if
     if length(n2) = 0 then
-        if n1[1] < 0 then -- if IsNegative(n1) then
-            return -1
+        if n1[1] > 0 then
+            return {1, 0, 0}
         else
-            return 1
+            return {-1, 0, 0}
         end if
         -- return iff(n1[1] > 0, 1, -1)
     end if
-    neg1 = n1[1] < 0
-    neg2 = n2[1] < 0
     -- Case of unequal signs (mismatch of signs, sign(n1) xor sign(n2))
-    if not neg1 then -- if IsPositive(n1) then
-        if neg2 then -- if IsNegative(n2) then
-            return 1
+    if PositiveDigit(n1[1]) then -- if IsPositive(n1) then
+        if NegativeDigit(n2[1]) then -- if IsNegative(n2) then
+            return {1, 0, 0}
         end if
         -- both positive
         if exp1 != exp2 then
             if exp1 > exp2 then
-                return 1
-            else -- if exp1 < exp2 then
-                return -1
+                return {1, 0, 0}
+            else
+                return {-1, 0, 0}
             end if
+            -- return iff(exp1 > exp2, 1, -1)
             -- return (exp1 > exp2) - (exp1 < exp2)
         end if
     else -- if IsNegative(n1) then
-        if not neg2 then -- if IsPositive(n2) then
-            return -1
+        if PositiveDigit(n2[1]) then -- if IsPositive(n2) then
+            return {-1, 0, 0}
         end if
         -- both negative
         if exp1 != exp2 then
             if exp1 < exp2 then
-                return 1
-            else -- if exp1 > exp2 then
-                return -1
+                return {1, 0, 0}
+            else
+                return {-1, 0, 0}
             end if
+            -- return iff(exp1 < exp2, 1, -1)
             -- return (exp1 < exp2) - (exp1 > exp2)
         end if
     end if
@@ -80,41 +74,43 @@ global function CompareExp(sequence n1, integer exp1, sequence n2, integer exp2,
     if not f then
         minlen = min(length(n1), length(n2))
     end if
-    compareMinLength = minlen
+    compareMinLen = minlen
     for i = compareStart to minlen do
         if n1[i] != n2[i] then
             if n1[i] > n2[i] then
-                return 1
+                return {1, equalLen, compareMinLen}
             else
-                return -1
+                return {-1, equalLen, compareMinLen}
             end if
+            -- return iff(n1[i] > n2[i], 1, -1)
         end if
-        equalLength += 1
+        equalLen += 1
 ifdef not NO_SLEEP_OPTION then
         sleep(nanoSleep)
 end ifdef
     end for
-    if f then
-        return 0
+    if f or length(n1) = length(n2) then
+        return {0, equalLen, compareMinLen}
     end if
-    if length(n1) = length(n2) then
-        return 0 -- numbers are equal
-    end if
-    f = length(n1) > length(n2)
-    if neg1 then -- if IsNegative(n1) then
-        if f then -- if length(n1) > length(n2) then
-            return -1
+    if NegativeDigit(n1[1]) then -- if IsNegative(n1) then
+        if length(n1) > length(n2) then
+            return {-1, equalLen, compareMinLen}
         else
-            return 1
+            return {1, equalLen, compareMinLen}
         end if
+        -- return iff(length(n1) > length(n2), -1, 1)
     else -- if IsPositive(n1) then
-        if f then -- if length(n1) > length(n2) then
-            return 1
+        if length(n1) > length(n2) then
+            return {1, equalLen, compareMinLen}
         else
-            return -1
+            return {-1, equalLen, compareMinLen}
         end if
+        -- return iff(length(n1) > length(n2), 1, -1)
     end if
 end function
+
+integer equalLength = 0
+integer compareMinLength = 0
 
 global function GetEqualLength() -- get equalLength of the last CompareExp(), or EunCompare()
     return equalLength
@@ -123,6 +119,15 @@ end function
 global function GetCompareMin()
     return compareMinLength
 end function
+
+global function CompareExp(sequence n1, integer exp1, sequence n2, integer exp2, integer minlen = -1, integer compareStart = 1)
+    object x
+    x = CompareExpLen(n1, exp1, n2, exp2, minlen, compareStart)
+    equalLength = x[2]
+    compareMinLength = x[3]
+    return x[1]
+end function
+
 
 -- RangeEqual() and Equaln()
 

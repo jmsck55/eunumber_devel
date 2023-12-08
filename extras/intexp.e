@@ -1,4 +1,4 @@
--- Copyright James Cook James Cook
+-- Copyright James Cook
 -- Integer, with exponent, datatype
 
 namespace intexp

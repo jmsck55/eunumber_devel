@@ -1,4 +1,4 @@
--- Copyright James Cook James Cook
+-- Copyright James Cook
 -- convertfiles.ex
 
 -- Find and Replace All replacements, in order to All Files in one Folder with or without subdirectories.

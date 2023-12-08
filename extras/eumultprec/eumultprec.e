@@ -1,4 +1,4 @@
--- Copyright James Cook James Cook
+-- Copyright James Cook
 -- EuMultPrec, Euphoria Multiple Precision Library
 -- Goal: Use 30-bit or 62-bit integers as limbs in a library similar to GMP.
 

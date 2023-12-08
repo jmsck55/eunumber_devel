@@ -1,6 +1,5 @@
 -- Copyright James Cook
 -- trig formulas for EuNumber.
--- include eunumber/TrigForm.e
 
 namespace trigform
 

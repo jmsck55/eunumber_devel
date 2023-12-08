@@ -1,6 +1,5 @@
 -- Copyright James Cook
 -- allocate.e contains low-level functions for EuNumber.
--- include eunumber/Allocate.e
 
 namespace allocate
 

@@ -86,7 +86,8 @@ include ArcTan.e
 --TODO: Write a complex version of ArcTanExpA().
 
 
-global function ArcTanExpA(sequence n1, integer exp1, TargetLength targetLength, AtomRadix radix)
+global function ArcTanExpA(sequence n1, integer exp1, integer targetLength, atom radix,
+        sequence config = {}, integer getAllLevel = NORMAL)
 -- b = (z^2)/(z^2 + 1)
 --  NOTE: b is less than 1.
 -- arctan(z) = (b / z) * Sumation(n=0 to inf) of Product(k=1 to 'n') of (b - (b / (2 * k + 1)))
@@ -128,10 +129,10 @@ global function ArcTanExpA(sequence n1, integer exp1, TargetLength targetLength,
     -- targetLength += adjustPrecision
     protoTargetLength = targetLength + moreAccuracy + 1
     -- Step0:
-    a = SquaredExp(n1, exp1, protoTargetLength, radix)
-    a = AddExp(a[1], a[2], {1}, 0, protoTargetLength, radix)
-    a = DivideExp(n1, exp1, a[1], a[2], protoTargetLength, radix)
-    b = MultiplyExp(n1, exp1, a[1], a[2], protoTargetLength, radix)
+    a = SquaredExp(n1, exp1, protoTargetLength, radix, CARRY_ADJUST, config, TO_EXP)
+    a = AddExp(a[1], a[2], {1}, 0, protoTargetLength, radix, CARRY_ADJUST, config, TO_EXP)
+    a = DivideExp(n1, exp1, a[1], a[2], protoTargetLength, radix, config, TO_EXP)
+    b = MultiplyExp(n1, exp1, a[1], a[2], protoTargetLength, radix, AUTO_ADJUST, config, TO_EXP) -- AUTO_ADJUST defaults to CARRY_ADJUST
     tmp = {{1}, 0}
     prod = tmp
     sum = tmp
@@ -143,13 +144,13 @@ global function ArcTanExpA(sequence n1, integer exp1, TargetLength targetLength,
     arcTanCount = 1
     while calculating and arcTanCount <= arcTanIter do
     -- for n = 1 to arcTanIter do -- NOTE: b is less than 1.
-        k2 = AddExp(k2[1], k2[2], {1}, 0, protoTargetLength, radix)
-        tmp = DivideExp(b[1], b[2], k2[1], k2[2], protoTargetLength, radix)
-        k2 = AddExp(k2[1], k2[2], {1}, 0, protoTargetLength, radix)
-        tmp = SubtractExp(b[1], b[2], tmp[1], tmp[2], protoTargetLength, radix)
-        prod = MultiplyExp(prod[1], prod[2], tmp[1], tmp[2], protoTargetLength, radix)
+        k2 = AddExp(k2[1], k2[2], {1}, 0, protoTargetLength, radix, AUTO_ADJUST, config, TO_EXP)
+        tmp = DivideExp(b[1], b[2], k2[1], k2[2], protoTargetLength, radix, config, TO_EXP)
+        k2 = AddExp(k2[1], k2[2], {1}, 0, protoTargetLength, radix, AUTO_ADJUST, config, TO_EXP)
+        tmp = SubtractExp(b[1], b[2], tmp[1], tmp[2], protoTargetLength, radix, AUTO_ADJUST, config, TO_EXP)
+        prod = MultiplyExp(prod[1], prod[2], tmp[1], tmp[2], protoTargetLength, radix, AUTO_ADJUST, config, TO_EXP)
         --lookat = sum
-        sum = AddExp(prod[1], prod[2], sum[1], sum[2], protoTargetLength, radix)
+        sum = AddExp(prod[1], prod[2], sum[1], sum[2], protoTargetLength, radix, AUTO_ADJUST, config, TO_EXP)
         --ret = sum
         -- if useExtraAdjustRound then
         --     ret = AdjustRound(ret[1], ret[2], targetLength + adjustRound, radix, NO_SUBTRACT_ADJUST)
@@ -165,7 +166,7 @@ global function ArcTanExpA(sequence n1, integer exp1, TargetLength targetLength,
         --      arcTanCount = n
         --      exit
         --end if
-        s = ReturnToUserCallBack(ID_ArcTan, arcTanHowComplete, targetLength, sum, lookat, radix)
+        s = ReturnToUserCallBack(ID_ArcTan, arcTanHowComplete, targetLength, sum, lookat, radix, config)
         lookat = s[2]
         arcTanHowComplete = s[3]
         if s[1] then
@@ -182,11 +183,11 @@ end ifdef
         abort(1/0)
     end if
     -- Step2: exit out of the while loop above,
-    a = MultiplyExp(a[1], a[2], sum[1], sum[2], protoTargetLength, radix)
-    s = ReturnToUserCallBack(ID_ArcTan, {}, targetLength, a, lookat, radix) -- {} means, don't actually compare
-    a = s[2]
+    a = MultiplyExp(a[1], a[2], sum[1], sum[2], protoTargetLength, radix, CARRY_ADJUST, config, TO_EXP)
+    --s = ReturnToUserCallBack(ID_ArcTan, {}, targetLength, a, lookat, radix) -- {} means, don't actually compare
+    --a = s[2]
     -- targetLength -= adjustPrecision
-    a = AdjustRound(a[1], a[2], targetLength, a[4], NO_SUBTRACT_ADJUST)
+    a = AdjustRound(a[1], a[2], targetLength, a[4], NO_SUBTRACT_ADJUST, config, getAllLevel)
     return a
 end function
 

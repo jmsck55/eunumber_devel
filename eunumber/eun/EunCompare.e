@@ -4,7 +4,7 @@ include ../minieun/CompareFuncs.e
 include ../minieun/Eun.e
 
 global function EunCompare(Eun n1, Eun n2)
-    -- Will not have EunGetAll().  You can use it before calling this function.
+    -- Returns: if (n1 < n2) return -1; if (n1 > n2) return 1; if (n1 == n2) return 0;
     if n1[4] != n2[4] then
         return {}
     end if

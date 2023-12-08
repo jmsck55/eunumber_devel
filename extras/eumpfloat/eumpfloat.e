@@ -1,4 +1,4 @@
--- Copyright James Cook James Cook
+-- Copyright James Cook
 -- Make a datatype like floating point, for scientific calculations.
 
 -- See: quadmath.h from GCC, for functions on float128

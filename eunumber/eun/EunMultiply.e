@@ -2,27 +2,23 @@
 
 include ../minieun/Multiply.e
 include ../minieun/Common.e
-include ../minieun/UserMisc.e
 include ../minieun/Eun.e
+include ../minieun/GetAll.e
 
 -- EunMultiply
-global function EunMultiply(Eun n1, Eun n2)
-    TargetLength targetLength
-    sequence a1, a2
-    if n1[4] != n2[4] then
-        printf(1, "Error %d\n", 5)
-        abort(1/0)
-    end if
-    targetLength = max(n1[3], n2[3])
-    a1 = EunGetAll(n1)
-    a2 = EunGetAll(n2)
-    return MultiplyExp(a1[1], a1[2], a2[1], a2[2], targetLength, a1[4])
+global function EunMultiply(sequence n1, sequence n2, integer getAllLevel = NORMAL)
+    integer targetLength
+    sequence s, config
+    s = EunCheckAll({n1, n2})
+    config = s[3]
+    targetLength = s[2] -- very important
+    return MultiplyExp(n1[1], n1[2], n2[1], n2[2], targetLength, n1[4], CARRY_ADJUST, config, getAllLevel)
 end function
 
 -- EunSquared
-global function EunSquared(Eun n1)
-    sequence a
-    a = EunGetAll(n1)
-    return SquaredExp(a[1], a[2], n1[3], a[4])
+global function EunSquared(sequence n1, integer getAllLevel = NORMAL)
+    Eun test = n1
+    integer targetLength = GetActualTargetLength(n1)
+    sequence config = GetConfiguration1(n1)
+    return SquaredExp(n1[1], n1[2], targetLength, n1[4], CARRY_ADJUST, config, getAllLevel)
 end function
-

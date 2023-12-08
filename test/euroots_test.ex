@@ -21,7 +21,7 @@ calculationSpeed = defaultTargetLength
 defaultRadix = 10
 -- adjustRound = 0
 
-function Func1Exp(sequence n1, integer exp1, integer targetLength, integer radix, object pass1)
+function Func1Exp(sequence n1, integer exp1, integer targetLength, atom radix, object pass1)
     object x = {n1, exp1, targetLength, radix}
     return EunCos(x)
 end function
@@ -37,7 +37,7 @@ puts(1, "\n")
 ? GetHalfPI()
 ? {"15707963267948966192313216916398" - '0', 0}
 
-function Func2Exp(sequence n1, integer exp1, integer targetLength, integer radix, object pass1)
+function Func2Exp(sequence n1, integer exp1, integer targetLength, atom radix, object pass1)
     object x = {n1, exp1, targetLength, radix}
     return EunSin(x)
 end function
@@ -62,7 +62,7 @@ pi = GetPI()
 
 a = EunSin(pi)
 ? a
-? EunAdjustRound(a, 4) -- round by 4, to get rid of infinitesimal
+? EunAdjustRound(a, -4) -- round by 4, to get rid of infinitesimal
 
 --? EunArcSin(pi)
 

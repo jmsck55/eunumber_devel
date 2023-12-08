@@ -1,6 +1,5 @@
 -- Copyright James Cook
 -- sprint function for EuNumber.
--- include eunumber/Sprint.e
 
 namespace sprint
 

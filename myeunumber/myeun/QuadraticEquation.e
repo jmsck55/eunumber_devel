@@ -2,6 +2,7 @@
 -- QuadraticEquation.e
 
 include ../../eunumber/minieun/Eun.e
+include ../../eunumber/minieun/GetAll.e
 include ../../eunumber/eun/EunAdd.e
 include ../../eunumber/eun/EunNegate.e
 include ../../eunumber/eun/EunMultiply.e
@@ -34,25 +35,30 @@ include ../complex/ComplexMultiply.e
 --
 -- two answers
 
-global function EunQuadraticEquation(Eun a, Eun b, Eun c)
-    Eun n1, n2, n3, ans, tmp
+global function EunQuadraticEquation(sequence a, sequence b, sequence c, integer getAllLevel = NORMAL)
+    sequence n1, n2, n3, ans, tmp
     Complex c1, c2, c3
-    sequence s
-    if a[4] != b[4] or a[4] != c[4] then
-        return 0
-    end if
-    if a[3] != b[3] or a[3] != c[3] then
-        return 0
-    end if
-    ans = EunMultiply(a, c)
-    ans = EunMultiply({{4}, 0, a[3], a[4]}, ans)
-    ans = EunNegate(ans)
-    tmp = EunMultiply(b, b)
-    ans = EunAdd(tmp, ans)
-    s = EunSquareRoot(ans)
-    tmp = EunNegate(b)
+    sequence s, config
+    integer targetLength
+    --integer firstFlag = and_bits(getAllLevel, GET_ALL)
+    integer lastFlag = and_bits(getAllLevel, TO_EXP)
+    s = EunCheckAll({a, b, c}, getAllLevel)
+    config = s[3]
+    targetLength = s[2]
+    s = s[1]
+    a = s[1]
+    b = s[2]
+    c = s[3]
+    ans = EunMultiply(a, c, GET_ALL)
+    ans = EunMultiply({{4}, 0, a[3], a[4]}, ans, GET_ALL)
+    ans = EunNegate(ans, GET_ALL)
+    tmp = EunSquared(b, GET_ALL)
+    ans = EunAdd(tmp, ans, GET_ALL)
+    s = EunSquareRoot(ans, GET_ALL)
+    tmp = EunNegate(b, GET_ALL)
     if s[1] then -- isImaginary, treat is as a Complex number
         -- Complex
+        --here:
         c1 = NewComplex(tmp, s[2]) -- (-b) + ans * i
         c2 = NewComplex(tmp, s[3]) -- (-b) - ans * i
         tmp = EunMultiply({{2}, 0, a[3], a[4]}, a)
@@ -62,13 +68,12 @@ global function EunQuadraticEquation(Eun a, Eun b, Eun c)
         c2 = ComplexMultiply(c2, c3)
         return {c1, c2}
     else
-        n1 = EunAdd(tmp, s[2])
-        n2 = EunAdd(tmp, s[3])
-        tmp = EunMultiply({{2}, 0, a[3], a[4]}, a)
-        tmp = EunMultiplicativeInverse(tmp)
-        n1 = EunMultiply(n1, tmp)
-        n2 = EunMultiply(n2, tmp)
+        n1 = EunAdd(tmp, s[2], GET_ALL)
+        n2 = EunAdd(tmp, s[3], GET_ALL)
+        tmp = EunMultiply({{2}, 0, a[3], a[4]}, a, GET_ALL)
+        tmp = EunMultiplicativeInverse(tmp, GET_ALL)
+        n1 = EunMultiply(n1, tmp, lastFlag + GET_ALL)
+        n2 = EunMultiply(n2, tmp, lastFlag + GET_ALL)
         return {n1, n2}
     end if
 end function
-

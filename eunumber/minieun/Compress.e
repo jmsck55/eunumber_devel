@@ -1,6 +1,5 @@
 -- Copyright James Cook
 -- CompressLeadingDigit functions of EuNumber.
--- include eunumber/Compress.e
 
 -- These functions are useful for compressing lots of small number arrays to save memory space.
 
@@ -9,7 +8,8 @@ namespace compressleading
 include Eun.e
 include UserMisc.e
 
-global function EunCompressLeadingDigit(Eun n1, integer compressLead = floor(n1[4] / 2))
+global function EunCompressLeadingDigit(sequence n1, integer compressLead = floor(n1[4] / 2))
+    Eun test = n1
     sequence num = n1[1]
     atom f
     if length(num) then
@@ -29,7 +29,8 @@ global function EunCompressLeadingDigit(Eun n1, integer compressLead = floor(n1[
     return n1
 end function
 
-global function EunUnCompressLeadingDigit(Eun n1)
+global function EunUnCompressLeadingDigit(sequence n1)
+    Eun test = n1
     sequence num = n1[1]
     atom f, a, radix = n1[4]
     if length(num) then

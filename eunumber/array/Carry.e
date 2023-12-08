@@ -9,33 +9,35 @@ include ../minieun/NanoSleep.e
 include ../minieun/Common.e
 include ../minieun/MathConst.e
 
-global function Carry(sequence numArray, AtomRadix radix)
-    ifdef USE_ATOM_RADIX then
-        atom emax = DOUBLE_INT_MAX
-    elsedef
-        atom emax = INT_MAX
-    end ifdef
-    atom q, r, b
+ifdef USE_ATOM_RADIX then
+    atom emax = DOUBLE_INT_MAX
+elsedef
+    atom emax = INT_MAX
+end ifdef
+
+global function Carry(sequence numArray, atom radix, integer once = 0)
+    atom q, b
     integer i
     i = length(numArray)
     while i > 0 do
         b = numArray[i]
         if b >= radix then
             -- round function? for atoms --here
-            q = floor(b / radix)
-            r = remainder(b, radix)
-            numArray[i] = r
+            q = floor(b / radix) -- quotient
+            numArray[i] = remainder(b, radix) -- remainder
             if i = 1 then
                 numArray = prepend(numArray, q)
             else
                 i -= 1
                 -- q += numArray[i] -- test for integer overflow
                 numArray[i] += q
-                if numArray[i] > emax then -- test for atom overflow
+                if numArray[i] >= emax then -- test for atom overflow
                     puts(1, "Error, overflow in Carry() function.\n")
                     abort(1/0)
                 end if
             end if
+        elsif once then
+            exit
         else
             i -= 1
         end if
@@ -46,33 +48,36 @@ end ifdef
     return numArray
 end function
 
-global function NegativeCarry(sequence numArray, AtomRadix radix)
-    ifdef USE_ATOM_RADIX then
-        atom emin = DOUBLE_INT_MIN
-    elsedef
-        atom emin = INT_MIN
-    end ifdef
-    atom q, r, b, negativeRadix
+
+ifdef USE_ATOM_RADIX then
+    atom emin = DOUBLE_INT_MIN
+elsedef
+    atom emin = INT_MIN
+end ifdef
+
+global function NegativeCarry(sequence numArray, atom radix, integer once = 0)
+    atom q, b, negativeRadix
     integer i
-    negativeRadix = -radix
+    negativeRadix = - (radix)
     i = length(numArray)
     while i > 0 do
         b = numArray[i]
         if b <= negativeRadix then
-            q = -(floor(b / negativeRadix)) -- bug fix
-            r = remainder(b, radix)
-            numArray[i] = r
+            q = -(floor(b / negativeRadix)) -- bug fix, quotient
+            numArray[i] = remainder(b, radix) -- remainder
             if i = 1 then
                 numArray = prepend(numArray, q)
             else
                 i -= 1
                 -- q += numArray[i] -- test for integer overflow
                 numArray[i] += q
-                if numArray[i] < emin then -- test for atom overflow
+                if numArray[i] <= emin then -- test for atom overflow
                     puts(1, "Error, overflow in NegativeCarry() function.\n")
                     abort(1/0)
                 end if
             end if
+        elsif once then
+            exit
         else
             i -= 1
         end if
@@ -89,12 +94,12 @@ ifdef USE_NEW_CARRY then
 -- New Carry() function:
 ------------------------
 
-global function NewCarry(sequence numArray, AtomRadix radix)
+global function NewCarry(sequence numArray, atom radix)
     integer i, sign
     ifdef USE_ATOM_RADIX then
-        atom q, r, b, emax = DOUBLE_INT_MAX, emin = DOUBLE_INT_MIN
+        atom q, r, b
     elsedef
-        integer q, r, b, emax = INT_MAX, emin = INT_MIN
+        integer q, r, b
     end ifdef
     i = length(numArray)
     if i then
@@ -135,7 +140,7 @@ global function NewCarry(sequence numArray, AtomRadix radix)
         else
             i -= 1
             q += numArray[i] -- test for integer overflow
-            if q > emax or q < emin then -- test for atom overflow
+            if q >= emax or q <= emin then -- test for atom overflow
                 puts(1, "Error, overflow in Carry() function.\n")
                 abort(1/0)
             end if
@@ -154,7 +159,7 @@ end function
 
 end ifdef
 
---global function NegativeCarry(sequence numArray, AtomRadix radix)
+--global function NegativeCarry(sequence numArray, atom radix)
 --    atom q, r, b, negativeRadix
 --    integer i
 --    negativeRadix = -radix

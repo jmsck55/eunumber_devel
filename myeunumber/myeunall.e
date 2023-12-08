@@ -4,9 +4,6 @@
 
 namespace myeun
 
-public include myeun/adjustPrecision.e
-public include myeun/ExpCommon.e
-public include myeun/ExpExp.e
 public include myeun/EunCubeRoot.e
 public include myeun/EunExp.e
 public include myeun/EunExp1.e
@@ -18,6 +15,8 @@ public include myeun/EunNthRoot.e
 public include myeun/EunPower.e
 public include myeun/EunRootFinding.e
 public include myeun/EunSquareRoot.e
+public include myeun/ExpCommon.e
+public include myeun/ExpExp.e
 public include myeun/Exponentiation.e
 public include myeun/GetE.e
 public include myeun/GetPrecision.e

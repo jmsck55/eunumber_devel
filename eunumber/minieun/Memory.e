@@ -1,6 +1,5 @@
 -- Copyright James Cook
 -- Memory functions of EuNumber.
--- include eunumber/MemoryFuncs.e
 
 namespace memory
 
@@ -37,29 +36,16 @@ global function ToMemory(sequence n1, integer windows = TRUE, integer degrade = 
 ifdef BITS64 then
     if not degrade then
         flag = 0
-        -- if windows then
-            offset = 4 * 8 + 8
-            size = offset + length(n2)
-            ma = allocate_data(size)
-            if ma = 0 then
-                return 0 -- couldn't allocate data
-            end if
-            poke(ma, "eun" & 64 & "w" & repeat(' ', 3)) -- padded to 8-byte boundary
-            poke8(ma + 8, n1[1..3])
-            poke(ma + 4 * 8, atom_to_float64(n1[4]))
-            poke(ma + offset, n2)
-        -- else
-        --     offset = 4 * 8 + 10
-        --     size = offset + length(n2)
-        --     ma = allocate_data(size)
-        --     if ma = 0 then
-        --         return 0 -- couldn't allocate data
-        --     end if
-        --     poke(ma, "eun" & 64 & "    ") -- padded to 8-byte boundary
-        --     poke8(ma + 8, n1[1..3])
-        --     poke(ma + 4 * 8, atom_to_float80(n1[4]))
-        --     poke(ma + offset, n2)
-        -- end if
+        offset = 4 * 8 + 8
+        size = offset + length(n2)
+        ma = allocate_data(size)
+        if ma = 0 then
+            return 0 -- couldn't allocate data
+        end if
+        poke(ma, "eun64" & repeat(' ', 3)) -- padded to 8-byte boundary
+        poke8(ma + 8, n1[1..3])
+        poke(ma + 4 * 8, atom_to_float64(n1[4]))
+        poke(ma + offset, n2)
     end if
 end ifdef
     if flag then
@@ -86,21 +72,17 @@ global function FromMemoryToEun(atom ma)
     else
 ifdef BITS64 then
         n1 = peek({ma, 8})
-        if equal(n1, "eun" & 64 & repeat(' ', 4)) then
-            n1 = peek8s({ma + 8, 3}) & float80_to_atom(peek({ma + 4 * 8, 10}))
-            n2 = peek({ma + 4 * 8 + 10, n1[1]})
-        elsif equal(n1, "eun" & 64 & "w" & repeat(' ', 3)) then
+        if equal(n1, "eun64" & repeat(' ', 3)) then
             n1 = peek8s({ma + 8, 3}) & float64_to_atom(peek({ma + 4 * 8, 8}))
             n2 = peek({ma + 4 * 8 + 8, n1[1]})
         else
             return 0 -- unsupported format
         end if
-        -- end if
 end ifdef
     end if
     if n1[3] < 0 then
         -- signed
-        n1[3] = -n1[3]
+        n1[3] = - (n1[3])
         n2 = Negate(n2)
     end if
     n2 = NewEun(n2, n1[2], 1 + Ceil(n1[3] * (log(n1[4]) / log(256))), 256)

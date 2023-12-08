@@ -1,14 +1,13 @@
 -- Copyright James Cook
 -- pretty_print() functions of EuNumber.
--- include eunumber/pretty_print.e
 
 namespace prettyprint
 
 -- platform() values:
-constant DOS32 = 1,  -- eui.exe
-        WIN32 = 2,  -- eui.exe
-        LINUX = 3,  -- eui
-        FREEBSD = 8 -- eui
+constant DOS32 = 1,  -- ex.exe
+        WIN32 = 2,  -- exw.exe, or exwc.exe, or eui.exe
+        LINUX = 3,  -- exu or eui
+        FREEBSD = 8 -- exu or eui
 
 -- pretty_print()
 

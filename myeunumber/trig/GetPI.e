@@ -9,7 +9,7 @@ include ../../eunumber/minieun/Common.e
 include ../../eunumber/minieun/Defaults.e
 include ../../eunumber/minieun/Eun.e
 include ../../eunumber/minieun/AdjustRound.e
-include ../../eunumber/eun/EunMultiply.e
+include ../../eunumber/minieun/Multiply.e
 include EunArcTan.e
 
 
@@ -28,29 +28,37 @@ global function SwapQuarterPI(sequence s = quarterPI) -- SwapQuarterPI when chan
     return oldvalue
 end function
 
-global function GetQuarterPI(TargetLength targetLength = defaultTargetLength, AtomRadix radix = defaultRadix, PositiveInteger multBy = 1)
+global function GetQuarterPI(integer targetLength = defaultTargetLength, atom radix = defaultRadix,
+        sequence config = {}, integer getAllLevel = NORMAL, PositiveInteger multBy = 1)
     sequence ret
     -- targetLength += adjustPrecision
-    if not length(quarterPI) or not length(quarterPI[1]) or quarterPI[3] <= targetLength or quarterPI[4] != radix then
-        quarterPI = ArcTanExp({1}, 0, targetLength + 1, radix)
+    if (not length(quarterPI)) or (not length(quarterPI[1])) or
+            (quarterPI[3] <= targetLength) or (quarterPI[4] != radix) then
+        quarterPI = ArcTanExp({1}, 0, targetLength + 1, radix, config, NORMAL)
     end if
-    ret = AdjustRound(quarterPI[1], quarterPI[2], targetLength, radix, NO_SUBTRACT_ADJUST)
-    if multBy != 1 then
-        object tmp = AdjustRound({multBy}, 0, targetLength, radix, 0) -- 0 makes it use Carry()
-        ret = EunMultiply(ret, tmp)
+    if multBy = 1 then
+        ret = quarterPI
+    else
+        object tmp = AdjustRound({multBy}, 0, targetLength, radix, CARRY_ADJUST, config, NORMAL)
+        ret = AdjustRound(quarterPI[1], quarterPI[2], targetLength, radix, NO_SUBTRACT_ADJUST, config, TO_EXP)
+        ret = MultiplyExp(ret[1], ret[2], tmp[1], tmp[2], targetLength, radix, CARRY_ADJUST, config, TO_EXP)
     end if
+    ret = AdjustRound(ret[1], ret[2], targetLength, radix, NO_SUBTRACT_ADJUST, config, getAllLevel)
     return ret
 end function
 
-global function GetHalfPI(TargetLength targetLength = defaultTargetLength, integer radix = defaultRadix)
-    return GetQuarterPI(targetLength, radix, 2)
+global function GetHalfPI(integer targetLength = defaultTargetLength, atom radix = defaultRadix,
+        sequence config = {}, integer getAllLevel = NORMAL)
+    return GetQuarterPI(targetLength, radix, config, getAllLevel, 2)
 end function
 
-global function GetPI(TargetLength targetLength = defaultTargetLength, integer radix = defaultRadix)
-    return GetQuarterPI(targetLength, radix, 4)
+global function GetPI(integer targetLength = defaultTargetLength, atom radix = defaultRadix,
+        sequence config = {}, integer getAllLevel = NORMAL)
+    return GetQuarterPI(targetLength, radix, config, getAllLevel, 4)
 end function
 
-global function GetTwoPI(TargetLength targetLength = defaultTargetLength, integer radix = defaultRadix)
-    return GetQuarterPI(targetLength, radix, 8)
+global function GetTwoPI(integer targetLength = defaultTargetLength, atom radix = defaultRadix,
+        sequence config = {}, integer getAllLevel = NORMAL)
+    return GetQuarterPI(targetLength, radix, config, getAllLevel, 8)
 end function
 

@@ -1,4 +1,4 @@
--- Copyright James Cook James Cook
+-- Copyright James Cook
 
 -- Little-endian functions: (based on scinot.e)
 -- NOTE: Avoids floating_point bug.

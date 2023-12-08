@@ -276,17 +276,17 @@ for i = 4 to length(cmd) do
                 ob = Myget(SEQRid)
                 switch ob do
                 case "inf" then
-                    ROUND = ROUND_INF
+                    roundingMethod = ROUND_INF
                 case "zero" then
-                    ROUND = ROUND_ZERO
+                    roundingMethod = ROUND_ZERO
                 case "up" then
-                    ROUND = ROUND_POS_INF
+                    roundingMethod = ROUND_POS_INF
                 case "down" then
-                    ROUND = ROUND_NEG_INF
+                    roundingMethod = ROUND_NEG_INF
                 case "even" then
-                    ROUND = ROUND_EVEN
+                    roundingMethod = ROUND_EVEN
                 case "odd" then
-                    ROUND = ROUND_ODD
+                    roundingMethod = ROUND_ODD
                 case else
                     ErrorAbort(4)
                 end switch

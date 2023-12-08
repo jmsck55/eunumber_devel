@@ -1,6 +1,5 @@
 -- Copyright James Cook
 -- reverse function for EuNumber.
--- include eunumber/Reverse.e
 
 namespace reverse
 

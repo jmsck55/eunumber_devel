@@ -9,6 +9,7 @@ include ../../eunumber/minieun/Divide.e
 include ../../eunumber/minieun/Eun.e
 include ../../eunumber/minieun/ReturnToUser.e
 include ../../eunumber/minieun/AdjustRound.e
+include ../../eunumber/minieun/ToAtom.e
 include ../../eunumber/minieun/FindIter.e
 include ../../eunumber/eun/Remainder.e
 
@@ -47,7 +48,7 @@ global function GetExp1HowCompleteMax()
 end function
 
 
-global function ExpExp1(sequence n1, integer exp1, TargetLength targetLength, AtomRadix radix, PositiveScalar theExp1Iter)
+global function ExpExp1(sequence n1, integer exp1, integer targetLength, atom radix, PositiveScalar theExp1Iter)
 -- not quite accurate enough for large numbers.
 
 -- it doesn't like large numbers.
@@ -72,7 +73,7 @@ global function ExpExp1(sequence n1, integer exp1, TargetLength targetLength, At
     sequence sum, tmp, den
     exp1HowComplete = {1, 0}
     sum = {{1}, 0}
-    den = AdjustRound({theExp1Iter}, 0, targetLength, radix, 0)
+    den = AdjustRound({theExp1Iter}, 0, targetLength, radix, FALSE)
     for i = theExp1Iter to 1 by -1 do
         tmp = DivideExp(n1, exp1, den[1], den[2], targetLength, radix)
         sum = MultiplyExp(sum[1], sum[2], tmp[1], tmp[2], targetLength, radix)

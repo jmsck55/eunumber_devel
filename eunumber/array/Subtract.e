@@ -9,15 +9,23 @@ include ../minieun/Common.e
 include Borrow.e
 include Carry.e
 
-global function Subtract(sequence numArray, AtomRadix radix, Bool isMixed = TRUE)
+
+global function Subtract(sequence numArray, atom radix, integer isMixed = TRUE)
+    -- if isMixed == 0 then Carry.
+    -- if isMixed == 1 then Carry, and then, Borrow, default.
+    -- if isMixed == 2 then Borrow.
     if length(numArray) then
         if numArray[1] < 0 then
-            numArray = NegativeCarry(numArray, radix)
+            if isMixed != 2 then -- use negative one (-1) to bypass "NegativeCarry()"
+                numArray = NegativeCarry(numArray, radix)
+            end if
             if isMixed then
                 numArray = NegativeBorrow(numArray, radix)
             end if
         else
-            numArray = Carry(numArray, radix)
+            if isMixed != 2 then -- use negative one (-1) to bypass "Carry()"
+                numArray = Carry(numArray, radix)
+            end if
             if isMixed then
                 numArray = Borrow(numArray, radix)
             end if

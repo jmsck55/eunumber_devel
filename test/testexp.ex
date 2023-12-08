@@ -1,4 +1,4 @@
--- Copyright James Cook James Cook
+-- Copyright James Cook
 -- This code tests Exp() and Log() functions of EuNumber.
 
 

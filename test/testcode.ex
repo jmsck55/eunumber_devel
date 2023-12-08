@@ -1,4 +1,4 @@
--- Copyright James Cook James Cook
+-- Copyright James Cook
 -- Test program, testprog.ex
 
 -- At the prompt, type in something like: 0.5 to 0.75 by 0.25, with 1 for imaginary part, and 0 for Complex constant.
@@ -207,8 +207,8 @@ function evaluate_calculation(object k, object v, object d, integer pc)
                     printf(fn, "diff=[REAL]%s, [IMAG]%s,\n", {ToString(difference[REAL]), ToString(difference[IMAG])})
                     len = {length(difference[REAL][1]), length(difference[IMAG][1])} + 1
                     r = {
-                        EunAdjustRound(c[1], len[1]),
-                        EunAdjustRound(c[2], len[2])
+                        EunAdjustRound(c[1], -len[1]),
+                        EunAdjustRound(c[2], -len[2])
                     }
                     printf(fn, "after rounding %d and %d:\n", {difference[REAL][2], difference[IMAG][2]})
                     printf(fn, " r:[REAL]%s,\n r:[IMAG]%s,\n", {ToString(r[REAL]), ToString(r[IMAG])})
@@ -226,7 +226,7 @@ function evaluate_calculation(object k, object v, object d, integer pc)
                     difference = EunSubtract(a, c)
                     printf(fn, "diff=%s,\n", {ToString(difference)})
                     len = length(difference[1]) + 1
-                    r = EunAdjustRound(c, len)
+                    r = EunAdjustRound(c, -len)
                     printf(fn, "after rounding %d:\n", {difference[2]})
                     printf(fn, " r:%s,\n", {ToString(r)})
                     if EunCompare(a, r) then

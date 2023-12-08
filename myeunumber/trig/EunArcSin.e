@@ -46,7 +46,7 @@ include GetPI.e
 --      return arcSinHowComplete[2]
 -- end function
 --
--- global function ArcSinExp(sequence n1, integer exp1, TargetLength targetLength, AtomRadix radix)
+-- global function ArcSinExp(sequence n1, integer exp1, integer targetLength, atom radix)
 -- --something wrong with arcsin()?
 --
 -- -- working on Trig functions

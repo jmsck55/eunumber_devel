@@ -15,7 +15,7 @@ include ../../eunumber/minieun/Eun.e
 include ArcTan.e
 
 
-global function ArcTanExpB(sequence n1, integer exp1, TargetLength targetLength, AtomRadix radix)
+global function ArcTanExpB(sequence n1, integer exp1, integer targetLength, atom radix)
 
 -- Doesn't like really large or really small numbers.
 

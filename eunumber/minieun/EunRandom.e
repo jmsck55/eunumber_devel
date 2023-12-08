@@ -1,6 +1,5 @@
 -- Copyright James Cook
 -- Random functions for EuNumber.
--- include eunumber/EunRandom.e
 
 namespace random
 
@@ -8,9 +7,9 @@ public include std/rand.e
 
 include ../array/Borrow.e
 include ../array/Negate.e
+include ../array/TrimZeros.e
 include Common.e
 include Eun.e
-include TrimZeros.e
 
 -- Rand functions:
 
@@ -30,7 +29,8 @@ type Round3(integer i)
     return i >= 0 and i <= 5
 end type
 
-global function InaccurateFill(sequence n1, integer starting = length(n1) + 1, TargetLength targetLength, PositiveScalar radix, Round3 roundingRules = 0) -- roundingRules = 0 means don't round.
+global function InaccurateFill(sequence n1, integer starting = length(n1) + 1,
+     integer targetLength, PositiveScalar radix, Round3 roundingRules = 0) -- roundingRules = 0 means don't round.
 --NOTE: Supply "roundingRules" with an integer from 0 to 5.
 -- global constant ROUND_INF = 1 -- Round towards +infinity or -infinity, (positive or negative infinity)
 -- global constant ROUND_ZERO = 2 -- Round towards zero
@@ -97,7 +97,8 @@ global function InaccurateFill(sequence n1, integer starting = length(n1) + 1, T
     return tmp
 end function
 
-global function InaccurateFillExp(sequence n1, integer exp1, TargetLength targetLength, PositiveScalar radix, integer exp0, Round3 roundingRules = ROUND)
+global function InaccurateFillExp(sequence n1, integer exp1, integer targetLength,
+     PositiveScalar radix, integer exp0, Round3 roundingRules = roundingMethod)
     integer oldlen
     n1 = InaccurateFill(n1, exp1 - exp0 + 1, targetLength, radix, roundingRules)
     if exp0 > exp1 then
@@ -113,11 +114,11 @@ global function InaccurateFillExp(sequence n1, integer exp1, TargetLength target
     return NewEun(n1, exp1, targetLength, radix)
 end function
 
-global function EunInaccurateFill(Eun a, integer exp0, Round3 roundingRules = ROUND)
+global function EunInaccurateFill(Eun a, integer exp0, Round3 roundingRules = roundingMethod)
     return InaccurateFillExp(a[1], a[2], a[3], a[4], exp0, roundingRules)
 end function
 
-global function EunInaccurateSigDigits(Eun a, integer sigDigits, Round3 roundingRules = ROUND)
+global function EunInaccurateSigDigits(Eun a, integer sigDigits, Round3 roundingRules = roundingMethod)
     return EunInaccurateFill(a, a[2] - sigDigits, roundingRules)
 end function
 

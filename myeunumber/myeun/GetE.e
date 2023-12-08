@@ -24,17 +24,17 @@ global function SwapE(sequence s = eunE) -- SwapE when changing radixes, then sw
     return oldvalue
 end function
 
-global function GetE(TargetLength targetLength = defaultTargetLength, AtomRadix radix = defaultRadix)
+global function GetE(integer targetLength = defaultTargetLength, atom radix = defaultRadix,
+        sequence config = {}, integer getAllLevel = NORMAL)
     -- targetLength += adjustPrecision
-    if not length(eunE) or not length(eunE[1]) or eunE[3] <= targetLength or eunE[4] != radix then
+    if (not length(eunE)) or (not length(eunE[1])) or (eunE[3] <= targetLength) or (eunE[4] != radix) then
 ifdef DEBUG_TASK then
-    puts(1, "Calculating GetE()\n")
+        puts(1, "Calculating GetE()\n")
 end ifdef
-        eunE = ExpExp({1}, 0, targetLength + 1, radix, FALSE) -- FALSE for no factoring.
+        eunE = ExpExp({1}, 0, targetLength + 1, radix, 0, config, NORMAL)
 ifdef DEBUG_TASK then
-    puts(1, "Finished Calculating GetE()\n")
+        puts(1, "Finished Calculating GetE()\n")
 end ifdef
     end if
-    return AdjustRound(eunE[1], eunE[2], targetLength, radix, NO_SUBTRACT_ADJUST)
+    return AdjustRound(eunE[1], eunE[2], targetLength, radix, NO_SUBTRACT_ADJUST, config, getAllLevel)
 end function
-

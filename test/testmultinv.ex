@@ -14,7 +14,7 @@ include ../eunumber/my.e
 --FOR_ACCURACY = FALSE -- TRUE
 --multiplicativeInverseMoreAccuracy = 0 -- or it could be -1, to use calculationSpeed
 
-function EunGetAll1(Eun n1)
+function EunGetAllToExp1(Eun n1)
     -- Get all of the precision, and return as a new "Eun".
     -- Use at the beginning of each "EunFunc1()" function.
     sequence ret
@@ -27,7 +27,7 @@ function EunGetAll1(Eun n1)
 end function
 
 --here, it works, see below:
--- Work on something else next. See "EunGetAll()" above, and how it's used below:
+-- Work on something else next. See "EunGetAllToExp()" above, and how it's used below:
 
 function TestMultiplicativeInverse(Eun val)
 -- This function can be adapted to other functions that use "moreAccuracy" type variables.
@@ -36,11 +36,11 @@ function TestMultiplicativeInverse(Eun val)
     val[3] *= 2
     n2 = EunMultiplicativeInverse(val, a1[1])
 
-    a1 = EunGetAll1(n1)
+    a1 = EunGetAllToExp1(n1)
     a1[3] = n1[3]
     n3 = EunMultiplicativeInverse(a1)
     
-    a2 = EunGetAll1(n2)
+    a2 = EunGetAllToExp1(n2)
     a2[3] = val[3]
     n4 = EunMultiplicativeInverse(a2, n3[1])
     -- range = EunTest(n1, n2)

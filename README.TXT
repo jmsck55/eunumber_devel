@@ -25,9 +25,6 @@ https://github.com/jmsck55
 In your main file, you can use:
 
 
-	-- Copyright (c) 2020 Your Company
-	-- Description of your program, then
-
 	include my.e as my
 
 	my:eun n1 = {{1,2,3}, 0, 100, 10}
@@ -58,7 +55,7 @@ Special Variables and Constants:
 	public constant ROUND_UP = ROUND_POS_INF
 
 	-- global for "do_file.ex":
-	global integer ROUND = ROUND_INF
+	global integer roundingMethod = ROUND_INF
 
 	global positive_integer more_accuracy = 15 -- increase this value if maxlength is greater than 100.
 
@@ -98,10 +95,10 @@ Description:
 "default_max = 100" is used in certain functions when "max" is not known. (It does not have to be 100)
 "default_radix = 10" is the default radix used when "radix" is not known. (It is better, for debugging, as a multiple of 10)
 
-"ROUND" is used with the "adjust_round()" function.  When the last digit is half (example: 5) the radix (example: 10), then
-adjust_round() will round it according to ROUND.
+"roundingMethod" is used with the "adjust_round()" function.  When the last digit is half (example: 5) the radix (example: 10), then
+adjust_round() will round it according to roundingMethod.
 
-ROUND defaults to ROUND_INF, can be any of the following:
+roundingMethod defaults to ROUND_INF, can be any of the following:
 
 ROUND_INF: it will round it towards positive infinity or negative infinity (away from zero).
 ROUND_ZERO: will round it towards zero.

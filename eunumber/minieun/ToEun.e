@@ -1,8 +1,21 @@
 -- Copyright James Cook
 -- ToEun() function of EuNumber.
--- include eunumber/ToEun.e
+
 
 namespace toeun
+
+ifdef WITHOUT_TRACE then
+without trace
+end ifdef
+
+include ../array/Negate.e
+include ../array/ArrayFuncs.e
+include NanoSleep.e
+include Common.e
+include Defaults.e
+include Eun.e
+include ConvertExp.e
+include ToString.e
 
 ifdef SMALL_CODE then
 -- Use old value() function to avoid Intel bug:
@@ -10,13 +23,6 @@ ifdef SMALL_CODE then
 elsedef
     include std/get.e
 end ifdef
-
-include ../array/Negate.e
-include NanoSleep.e
-include Common.e
-include Defaults.e
-include ToString.e
-include ConvertExp.e
 
 global function StringToNumberExp(sequence st)
     integer isSigned, exp, f
@@ -75,6 +81,7 @@ end ifdef
         exp = 0
     end if
     -- st -= '0'
+    -- st = AddByDigit(st, -'0')
     for i = 1 to length(st) do
         st[i] -= '0'
         if st[i] > 9 or st[i] < 0 then
@@ -90,27 +97,40 @@ end ifdef
     return {st, exp}
 end function
 
-global function ToEun10(object s)
-    --if atom(s) then
-    --  s = ToString(s)
-    --end if
-    s = StringToNumberExp(s)
-    -- integer len = length(s[1])
-    -- if len < 2 then -- Todo: make TargetLength accept 0 and 1, and above as values.
-    --     len = 2
-    -- end if
-    return s
+global sequence toEunFormat = "%e"
+
+global procedure SetToEunFormat(sequence s)
+    toEunFormat = s
+end procedure
+
+global function GetToEunFormat()
+    return toEunFormat
 end function
 
-global function ToEun(object s, AtomRadix radix = defaultRadix, TargetLength targetLength = defaultTargetLength)
-    if not Eun(s) then
-        s = ToEun10(s)
+global function ToEun(object s, atom radix = defaultRadix, integer targetLength = defaultTargetLength,
+     sequence config = {}, integer getAllLevel = NORMAL)
+    -- done.
+    atom fromRadix
+    if Eun(s) then
+        fromRadix = s[4]
+        if not length(config) then
+            config = GetConfiguration1(s)
+        end if
+    else
+        if atom(s) then
+            s = sprintf(toEunFormat, s)
+        end if
+        s = StringToNumberExp(s) -- same as "ToEun10(s)"
         if atom(s) then
             return s
         end if
+        fromRadix = 10
     end if
-    -- if radix != 10 or s[3] != targetLength then
-        s = ConvertExp(s[1], s[2], targetLength, 10, radix)
-    -- end if
+    s = ConvertExp(s[1], s[2], targetLength, fromRadix, radix, config, getAllLevel)
     return s
 end function
+
+-- Routine id for "ToEun()":
+
+global constant ToEun_id = routine_id("ToEun")
+

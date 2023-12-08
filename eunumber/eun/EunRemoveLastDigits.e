@@ -1,9 +1,8 @@
 -- Copyright James Cook
 
-
 include ../minieun/Eun.e
 include ../minieun/AdjustRound.e
-
+include ../minieun/GetAll.e
 
 -- NOTE: Most functions are designed to be accurate to the last digit but,
 -- sometimes we want something less accurate.
@@ -25,17 +24,15 @@ global function RemoveLastDigits(sequence num, integer digits = 1, PositiveInteg
     return num
 end function
 
-global function EunRoundLastDigits(Eun n1, integer digits = 1, PositiveInteger minlength = 0)
+global function EunRoundLastDigits(sequence n1, integer digits = 1, PositiveInteger minlength = 0, integer getAllLevel = NORMAL)
     -- digits is an integer.
+    Eun test = n1
     integer newlen
-    sequence a
-
+    sequence config = GetConfiguration1(n1)
     newlen = length(n1[1]) - digits
     if newlen < minlength then
         newlen = minlength
     end if
-
-    a = EunGetAll(n1)
-    a = AdjustRound(a[1], a[2], newlen, a[4], NO_SUBTRACT_ADJUST)
-    return a
+    n1 = AdjustRound(n1[1], n1[2], newlen, n1[4], NO_SUBTRACT_ADJUST, config, getAllLevel)
+    return n1
 end function

@@ -1,6 +1,5 @@
 -- Copyright James Cook
 
-
 include ../../eunumber/minieun/NanoSleep.e
 include ../../eunumber/minieun/Common.e
 include ../../eunumber/minieun/Multiply.e
@@ -15,10 +14,8 @@ include ../../eunumber/minieun/ToAtom.e
 include ../../eunumber/minieun/ToEun.e
 include ../../eunumber/minieun/ConvertExp.e
 include ../../eunumber/array/Negate.e
-include ../../eunumber/eun/EunNegate.e
 
 include RealMode.e
-
 
 --nthroot.e
 
@@ -27,19 +24,20 @@ include RealMode.e
 -- Find the nth root of any number
 
 global function IntPowerExp(PositiveInteger toPower, sequence n1, integer exp1,
-                    TargetLength targetLength, AtomRadix radix)
+     integer targetLength, atom radix, sequence config, integer getAllLevel = NORMAL)
 -- b^x = e^(x * ln(b))
     sequence p
     if toPower = 0 then
-        return {{1}, 0, targetLength, radix, 0}
+        return {{1}, 0, targetLength, radix}
     end if
     p = {n1, exp1}
     for i = 2 to toPower do
-        p = MultiplyExp(p[1], p[2], n1, exp1, targetLength, radix)
+        p = MultiplyExp(p[1], p[2], n1, exp1, targetLength, radix, CARRY_ADJUST, config, TO_EXP)
 ifdef not NO_SLEEP_OPTION then
         sleep(nanoSleep)
 end ifdef
     end for
+    p = AdjustRound(p[1], p[2], targetLength, radix, NO_SUBTRACT_ADJUST, config, getAllLevel)
     return p
 end function
 
@@ -51,14 +49,14 @@ end function
 -- end function
 
 global function NthRootProtoExp(PositiveScalar n, sequence x1, integer x1Exp,
-                   sequence guess, integer guessExp,
-                   TargetLength targetLength, AtomRadix radix)
+     sequence guess, integer guessExp, integer targetLength, atom radix,
+     sequence config, integer getAllLevel = NORMAL)
     sequence p, quot, average
-    p = IntPowerExp(n - 1, guess, guessExp, targetLength, radix)
-    quot = DivideExp(x1, x1Exp, p[1], p[2], targetLength, radix)
-    p = MultiplyExp({n - 1}, 0, guess, guessExp, targetLength, radix)
-    p = AddExp(p[1], p[2], quot[1], quot[2], targetLength, radix)
-    average = DivideExp(p[1], p[2], {n}, 0, targetLength, radix)
+    p = IntPowerExp(n - 1, guess, guessExp, targetLength, radix, config, TO_EXP)
+    quot = DivideExp(x1, x1Exp, p[1], p[2], targetLength, radix, config, TO_EXP)
+    p = MultiplyExp({n - 1}, 0, guess, guessExp, targetLength, radix, CARRY_ADJUST, config, TO_EXP)
+    p = AddExp(p[1], p[2], quot[1], quot[2], targetLength, radix, AUTO_ADJUST, config, TO_EXP)
+    average = DivideExp(p[1], p[2], {n}, 0, targetLength, radix, config, getAllLevel)
     return average
 end function
 
@@ -72,7 +70,6 @@ global function GetNthRootMoreAccuracy()
 end function
 
 global integer nthRootIter = 1000000000
-global integer lastNthRootIter = 0
 
 global sequence nthRootHowComplete = {1, 0}
 
@@ -86,21 +83,21 @@ end function
 
 global constant ID_NthRoot = 3
 
-global function NthRootExp(PositiveScalar n, sequence x1, integer x1Exp, sequence guess,
-            integer guessExp, TargetLength targetLength, AtomRadix radix)
+global function NthRootExp(PositiveScalar n, sequence x1, integer x1Exp, sequence guess, integer guessExp,
+     integer targetLength, atom radix, sequence config = {}, integer getAllLevel = NORMAL)
     sequence lookat, ret, s
-    integer protoTargetLength, moreAccuracy
+    integer protoTargetLength, moreAccuracy, lastNthRootIter
     nthRootHowComplete = {1, 0}
     if length(x1) = 0 then
         nthRootHowComplete = {0, 0}
         lastNthRootIter = 1
-        return {x1, x1Exp, targetLength, radix, 0}
+        return {x1, x1Exp, targetLength, radix}
     end if
     if length(x1) = 1 then
         if x1[1] = 1 or x1[1] = -1 then
             nthRootHowComplete = {1, 1}
             lastNthRootIter = 1
-            return {x1, x1Exp, targetLength, radix, 0}
+            return {x1, x1Exp, targetLength, radix}
         end if
     end if
     if nthRootMoreAccuracy >= 0 then
@@ -113,14 +110,15 @@ global function NthRootExp(PositiveScalar n, sequence x1, integer x1Exp, sequenc
     -- Use adjustPrecision for higher order functions, such as Trig functions.
     -- targetLength += adjustPrecision
     protoTargetLength = targetLength + moreAccuracy + 1
-    ret = AdjustRound(guess, guessExp, protoTargetLength, radix, FALSE)
+    ret = AdjustRound(guess, guessExp, protoTargetLength, radix, CARRY_ADJUST, config, NORMAL) -- TO_EXP)
     lookat = {}
     calculating = ID_NthRoot -- begin calculating
     lastNthRootIter = 1
     while calculating and lastNthRootIter <= nthRootIter do
     -- for i = 1 to nthRootIter do
         --lookat = ret
-        ret = NthRootProtoExp(n, x1, x1Exp, ret[1], ret[2], protoTargetLength, radix)
+        ret = NthRootProtoExp(n, x1, x1Exp, ret[1], ret[2], protoTargetLength, radix,
+         config, TO_EXP)
         --guess = ret[1]
         --guessExp = ret[2]
         --if useExtraAdjustRound then
@@ -133,7 +131,7 @@ global function NthRootExp(PositiveScalar n, sequence x1, integer x1Exp, sequenc
         --        exit
         --    end if
         --end if
-        s = ReturnToUserCallBack(ID_NthRoot, nthRootHowComplete, targetLength, ret, lookat, radix)
+        s = ReturnToUserCallBack(ID_NthRoot, nthRootHowComplete, targetLength, ret, lookat, radix, config)
         lookat = s[2]
         nthRootHowComplete = s[3]
         if s[1] then
@@ -149,15 +147,18 @@ end ifdef
         printf(1, "Error %d\n", 3)
         abort(1/0)
     end if
-    ret = AdjustRound(ret[1], ret[2], targetLength, radix, NO_SUBTRACT_ADJUST)
+    ret = AdjustRound(ret[1], ret[2], targetLength, radix, NO_SUBTRACT_ADJUST, config, getAllLevel)
     return ret
 end function
 
-global function EunNthRoot(PositiveScalar n, Eun n1, object guess = 0)
+global function EunNthRoot(PositiveScalar n, sequence n1, object guess = 0, integer getAllLevel = NORMAL)
+    Eun test = n1
     integer isImag, exp1, f
-    sequence ret
+    sequence ret, config
     atom a
-    exp1 = 0
+    config = GetConfiguration1(n1)
+    integer firstFlag = and_bits(getAllLevel, GET_ALL)
+    integer lastFlag = and_bits(getAllLevel, TO_EXP)
     if atom(guess) then
         -- Latest code:
         exp1 = n1[2]
@@ -171,20 +172,24 @@ global function EunNthRoot(PositiveScalar n, Eun n1, object guess = 0)
         n1[2] -= exp1
         guess = ToAtom(n1)
         a = guess
-        f = 0
         if a < 0 then
             -- factor out sqrt(-1), an imaginary number, on even roots
-            a = -a -- atom
+            a = - (a) -- atom
             f = IsIntegerOdd(n)
+        else
+            f = 0
         end if
         a = power(a, 1 / n)
         if f then
-            a = -a -- atom
+            a = - (a) -- atom
         end if
-        guess = ToEun(sprintf("%e", a), n1[4], n1[3])
+        guess = ToEun(a, n1[4], n1[3], config, NORMAL, "%e")
+        -- guess = ToEun(sprintf("%e", a), n1[4], n1[3])
+    else
+        exp1 = 0
     end if
     if n1[4] != guess[4] then -- still needed if guess is supplied as an argument of this function.
-        guess = EunConvert(guess, n1[4], n1[3])
+        guess = EunConvert(guess, n1[4], n1[3], TO_EXP + firstFlag)
     end if
     if IsIntegerEven(n) then
         if length(n1[1]) and n1[1][1] < 0 then
@@ -202,12 +207,14 @@ global function EunNthRoot(PositiveScalar n, Eun n1, object guess = 0)
             guess[1] = Negate(guess[1])
         end if
     end if
-    ret = NthRootExp(n, n1[1], n1[2], guess[1], guess[2], n1[3], n1[4])
+    ret = NthRootExp(n, n1[1], n1[2], guess[1], guess[2], n1[3], n1[4], config, lastFlag)
     exp1 = floor(exp1 / n)
     ret[2] += exp1
     if IsIntegerOdd(n) then
         return ret
     else
-        return {isImag, ret, EunNegate(ret)}
+        n1 = ret
+        n1[1] = Negate(n1[1])
+        return {isImag, ret, n1} -- n1 = assign(ret, 1, Negate(ret[1])) -- See also, UserMisc.e for "assign()".
     end if
 end function

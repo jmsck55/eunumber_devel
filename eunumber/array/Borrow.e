@@ -8,7 +8,7 @@ end ifdef
 include ../minieun/NanoSleep.e
 include ../minieun/Common.e
 
-global function Borrow(sequence numArray, AtomRadix radix)
+global function Borrow(sequence numArray, atom radix)
     for i = length(numArray) to 2 by -1 do
         if numArray[i] < 0 then
             numArray[i] += radix
@@ -21,7 +21,7 @@ end ifdef
     return numArray
 end function
 
-global function NegativeBorrow(sequence numArray, AtomRadix radix)
+global function NegativeBorrow(sequence numArray, atom radix)
     for i = length(numArray) to 2 by -1 do
         if numArray[i] > 0 then
             numArray[i] -= radix

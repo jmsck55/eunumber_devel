@@ -30,7 +30,7 @@ global integer sinIterCount = 0
 
 global constant ID_Sine = 7
 
-global function SinExp(sequence n1, integer exp1, TargetLength targetLength, AtomRadix radix, integer inside = 0)
+global function SinExp(sequence n1, integer exp1, integer targetLength, atom radix, integer inside = 0)
 -- sine(x) = x - ((x^3)/(3!)) + ((x^5)/(5!)) - ((x^7)/(7!)) + ((x^9)/(9!)) - ...
     -- Cases: 0 equals zero (0)
     -- Range: -PI/2 to PI/2, inclusive

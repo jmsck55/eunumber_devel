@@ -3,7 +3,7 @@
 -- Update this version number whenever changing the library:
 
 global function GetVersion() -- revision number
-    return 259 -- completely type checked version, integer if development version.
+    return 260 -- completely type checked version, integer if development version.
     -- return 1.1 -- if release version.
 end function
 

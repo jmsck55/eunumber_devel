@@ -86,7 +86,7 @@ include my.e
 --global function MyEunSubtract(integer retid, integer id1, integer id2)
 --global function MyEunMultiplicativeInverse(integer retid, integer id1, sequence guess = {})
 --global function MyEunDivide(integer retid, integer id1, integer id2)
---global function MyEunConvert(integer retid, integer id1, atom toRadix, TargetLength targetLength)
+--global function MyEunConvert(integer retid, integer id1, atom toRadix, integer targetLength)
 --global function MyEunRoundPrecision(integer retid, integer id1, integer prec = 0)
 --global function MyEunCompare(integer id1, integer id2)
 --global function MyGetEqualLength()
@@ -509,7 +509,8 @@ global procedure MySetPrecision(integer id)
     -- or, use on an individual id, using MySetPrecision().
     Eun a = Get(id)
     object x = EunConvert(a, defaultRadix, defaultTargetLength)
-    x &= {0, defaultPrecision}
+    x = assign(x, 6, GetConfiguration1(a), {})
+    -- x &= {0, defaultPrecision}
     Set(id, x)
 end procedure
 
@@ -642,7 +643,7 @@ end function
 
 -- EunConvert:
 
-global function MyEunConvert(integer retid, integer id1, atom toRadix, TargetLength targetLength)
+global function MyEunConvert(integer retid, integer id1, atom toRadix, integer targetLength)
     Eun n1 = Get(id1)
     object x = EunConvert(n1, toRadix, targetLength)
     Set(retid, x)

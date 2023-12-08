@@ -1,10 +1,13 @@
 -- Copyright James Cook
 -- "Return to user" callback functions of EuNumber.
--- include eunumber/ReturnToUser.e
 
 -- NOTE: It has to round, or not.
 
 namespace returntouser
+
+ifdef WITHOUT_TRACE then
+without trace
+end ifdef
 
 include AdjustRound.e
 include Defaults.e
@@ -22,7 +25,8 @@ global function GetCalculatingStatus()
     return calculating
 end function
 
-global function HowComplete(sequence n1, integer exp1, sequence n2, integer exp2, integer start = 1, integer stop = -1)
+global function HowComplete(sequence n1, integer exp1, sequence n2, integer exp2,
+     integer start = 1, integer stop = -1)
     integer c, clength, cminlength
     c = CompareExp(n1, exp1, n2, exp2, stop, start) -- use default value for 5th (fith) argument.
     --if c = 0 and start > 1 then
@@ -34,7 +38,8 @@ global function HowComplete(sequence n1, integer exp1, sequence n2, integer exp2
 end function
 
 
-global function DefaultRTU(integer eunFunc, sequence hc, integer targetLength, sequence ret, sequence lookat, atom radix)
+global function DefaultRTU(integer eunFunc, sequence hc, integer targetLength,
+     sequence ret, sequence lookat, atom radix, sequence config)
     integer level -- 0, 1, or 2
     
 --global sequence howComplete = {level = 0, ret, new_howComplete}
@@ -42,7 +47,7 @@ global function DefaultRTU(integer eunFunc, sequence hc, integer targetLength, s
 
     if not abort_calculating and length(hc) then
         if atom(hc[1]) then -- Eun number:
-            ret = AdjustRound(ret[1], ret[2], targetLength + 1, radix, CARRY_ADJUST)
+            ret = AdjustRound(ret[1], ret[2], targetLength + 1, radix, NO_SUBTRACT_ADJUST, config)
             if length(hc) = 3 then
                 hc = hc & 0
             end if
@@ -72,7 +77,7 @@ global function DefaultRTU(integer eunFunc, sequence hc, integer targetLength, s
             level = 0
             s = repeat(0, length(hc))
             for i = 1 to length(hc) do
-                s[i] = DefaultRTU(eunFunc, hc[i], targetLength, ret[i], lookat[i], radix)
+                s[i] = DefaultRTU(eunFunc, hc[i], targetLength, ret[i], lookat[i], radix, config)
                 level = level or s[i][1] -- max(level, s[i][1])
                 ret[i] = s[i][2]
                 hc[i] = s[i][3]
@@ -99,8 +104,12 @@ global function GetReturnToUserCallBack()
     return return_to_user_id
 end function
 
-global function ReturnToUserCallBack(integer eunFunc, sequence a, integer targetLength, sequence ret, sequence lookat, atom radix)
+global function ReturnToUserCallBack(integer eunFunc, sequence a, integer targetLength,
+     sequence ret, sequence lookat, atom radix, sequence config = {})
     object x
+    if length(config) = 0 then
+        config = NewConfiguration()
+    end if
     ifdef USE_TASK_YIELD then
         if useTaskYield then
             task_yield()
@@ -108,10 +117,10 @@ global function ReturnToUserCallBack(integer eunFunc, sequence a, integer target
     end ifdef
     if return_to_user_id > -1 then
         -- call_func(argument length==6) return value is {0, ret, a} to continue loop, {1, ret, a} to return answer.
-        x = call_func(return_to_user_id, {eunFunc, a, targetLength, ret, lookat, radix}) -- pass 6 variables to the function
+        x = call_func(return_to_user_id, {eunFunc, a, targetLength, ret, lookat, radix, config}) -- pass 6 variables to the function
     else
     -- default is_equal() code:
-        x = DefaultRTU(eunFunc, a, targetLength, ret, lookat, radix)
+        x = DefaultRTU(eunFunc, a, targetLength, ret, lookat, radix, config)
     end if
     return x
 end function
